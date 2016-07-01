@@ -1,0 +1,10 @@
+<div class="post link-summary">
+    <img alt="" src="${post.postImage}"/>
+    <h3><a target="_blank" href="${post.postLink}">${post.postTitle}</a>
+    </h3>
+    <div class="post-content">${post.postContent}</div>
+    <div class="post-date">
+        #parse("posts/inc/post_date.vm")
+    </div>
+
+</div>

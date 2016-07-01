@@ -1,0 +1,132 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<div th:fragment="addlink">
+    <!--/*@thymesVar id="pagePreview" type="com.nixmash.springdata.jsoup.dto.PagePreviewDTO"*/-->
+    <!--/*@thymesVar id="postDTO" type="com.nixmash.springdata.jpa.dto.PostDTO"*/-->
+    <div class="container bs-docs-container big-font-container">
+        <div class="row row-centered">
+            <div class="bs-docs-section col-lg-9 col-centered">
+                <form th:object="${postDTO}" method="post" th:action="@{${#httpServletRequest.getRequestURI()}}"
+                      class="form-horizontal" id="link-add-form">
+
+                    <div th:if="${#fields.hasGlobalErrors()}"
+                         class="has-error col-lg-offset-3 alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <label class="control-label" th:each="err : ${#fields.globalErrors()}"
+                               th:text="${err}">...</label>
+                    </div>
+
+                    <table class="table table-striped">
+                        <tr>
+                            <td colspan="2" class="page-preview">
+                                <p th:if="*{postImage}"><img th:src="*{postImage}" alt="" class="thumbnail"/></p>
+                                <h3><a th:href="*{postLink}" th:text="*{postTitle}" target="_blank">[Post Title]</a>
+                                </h3>
+                                <p th:utext="*{postContent}">[Post Description]</p>
+                            </td>
+                        </tr>
+                        <tr th:classappend="${#fields.hasErrors('postTitle')} ? 'has-error'">
+                            <td class="col-sm-1">
+                                <div class="control-group" th:classappend="${#fields.hasErrors('postTitle')} ? 'error'">
+                                    <label class="control-label">Title</label>
+                                </div>
+                            </td>
+                            <td class="col-sm-5">
+                                <div class="controls">
+                                    <input type="text" class="form-control" th:field="*{postTitle}"/>
+                                    <label class="control-label" th:errors="*{postTitle}">[error]</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:classappend="${#fields.hasErrors('postContent')} ? 'has-error'">
+                            <td>
+                                <div class="control-group"
+                                     th:classappend="${#fields.hasErrors('postContent')} ? 'error'">
+                                    <label class="control-label">Description</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="controls">
+                                    <textarea name="postContent" th:field="*{postContent}" rows="5"
+                                              class="mail-body" id="summernote"></textarea>
+                                    <label class="control-label" th:errors="*{postContent}">[error]</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="*{hasImages}">
+                            <td colspan="2" class="td-carousel">
+                                <div class="pagepreveiw-images" data-example-id="simple-carousel">
+                                    <div id="pagepreview-carousel" class="carousel slide"
+                                         data-ride="carousel">
+
+                                        <!-- Indicators -->
+                                        <div class="carousel-inner" role="listbox">
+                                            <div th:each="imageUrl, row : ${pagePreview.getImages()}" class="item"
+                                                 th:classappend="${row.index == 1 }? 'active'">
+                                                <img th:src="${imageUrl.getSrc()}"/>
+                                            </div>
+                                        </div>
+
+                                        <!-- Controls -->
+                                        <a class="left carousel-control" href="#pagepreview-carousel" role="button"
+                                           data-slide="prev">
+                                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="right carousel-control" href="#pagepreview-carousel" role="button"
+                                           data-slide="next">
+                                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="tr-button-row">
+                            <td></td>
+                            <td>
+                                <div class="form-actions pull-right special-select">
+                                    <select th:field="*{displayType}" name="displayType" class="selectpicker"
+                                            data-style="btn-primary">
+                                        <option value="LINK_SUMMARY" th:text="#{add.post.button.link.summary}"
+                                                th:disabled="!*{postImage}">[link
+                                            with
+                                            summary]
+                                        </option>
+                                        <option value="LINK" th:text="#{add.post.button.link.text}">[link]</option>
+                                        <option value="LINK_FEATURE" th:text="#{add.post.button.link.feature}"
+                                                th:disabled="!*{hasImages}">
+                                            [featured
+                                            link]
+                                        </option>
+                                        <option value="NIXMASH_POST" th:text="#{add.post.button.nixmash.post}"
+                                                th:disabled="!*{hasImages}">[nixmash
+                                            spring post link]
+                                        </option>
+                                    </select>
+
+                                    <button type="submit" class="btn btn-success" name="link" value="true">Submit
+                                    </button>
+                                </div>
+                                <div class="pull-right"
+                                     th:classappend="${#fields.hasErrors('displayType')} ? 'has-error pad-right'">
+                                    <label class="control-label" th:errors="*{displayType}">[error]</label>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                    <input type="hidden" name="postImage" th:value="*{postImage}"/>
+                    <input type="hidden" name="postLink" th:value="*{postLink}"/>
+                    <input type="hidden" name="postType" th:value="*{postType}"/>
+                    <input type="hidden" name="hasImages" th:value="*{hasImages}"/>
+                    <input type="hidden" id="imageIndex" name="imageIndex" value="1"  />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

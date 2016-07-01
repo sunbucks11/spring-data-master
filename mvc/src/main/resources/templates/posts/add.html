@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <div th:include="fragments/head :: head" th:remove="tag">Global Header</div>
+    <title th:text="#{posts.add.page.title}">[Add NixMash Spring Post]</title>
+</head>
+<body>
+<nav th:replace="fragments/navbar :: navbar('posts')">Navbar</nav>
+
+<div class="container">
+    <div class="page-header" id="banner">
+        <div class="row">
+            <div class="col-lg-8 col-md-7 col-sm-6">
+                <h1 th:unless="${showPost}" th:text="#{posts.add.page.header}">[Add Post]</h1>
+                <h1 th:if="${showPost == 'note'}" class="lead" th:text="#{posts.add.note.page.header}">[Add Note]</h1>
+                <h1 th:if="${showPost == 'link'}" class="lead" th:text="#{posts.add.link.page.header}">[Add a Link]</h1>
+
+                <p th:unless="${showPost}" class="lead" th:text="#{posts.add.page.subheader}">[All Links]</p>
+
+            </div>
+            <div th:replace="fragments/sponsor :: [id='sponsor']">Sponsor
+                Image
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="container bs-docs-container">
+    <div class="row">
+        <div class="bs-docs-section">
+            <div id="message-holder">
+                <div th:if="${feedbackMessage}" th:class="'messageblock hidden'"
+                     th:utext="${feedbackMessage}"></div>
+            </div>
+
+            <div th:unless="${showPost}">
+                <form th:object="${postLink}" action="/posts/add.html" th:action="@{/posts/add}" method="get"
+                      class="form-horizontal" id="search-product-form">
+                    <table class="table table-striped">
+                        <tr th:classappend="${#fields.hasErrors('link')} ? 'has-error'">
+                            <td class="col-sm-1">
+                                <div class="control-group"
+                                     th:classappend="${#fields.hasErrors('link')} ? 'error'">
+                                    <label class="control-label">Source Url</label>
+                                </div>
+                            </td>
+                            <td class="col-sm-5">
+                                <div class="controls">
+                                    <input type="text" class="form-control" id="linkField" name="link" size="30"
+                                           maxlength="120"/>
+                                </div>
+                                <div class="controls" th:if="${#fields.hasErrors('link')}">
+                                    <h4>
+                                        <span class="label label-danger" th:errors="*{link}">[Errors]</span>
+                                    </h4>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <div class="form-actions pull-right">
+                                    <button type="submit" class="btn btn-success" name="formtype" value="link"
+                                            th:text="#{add.post.button.link}"></button>
+                                    <button type="submit" class="btn btn-primary" name="formtype" value="note"
+                                            th:text="#{add.post.button.note}"></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+
+            <div th:if="${showPost == 'note'}" th:include="fragments/posts/addnote :: addnote" th:remove="tag">Add Note
+            </div>
+            <div th:if="${showPost == 'link'}" th:include="fragments/posts/addlink :: addlink" th:remove="tag">Add Link
+            </div>
+        </div>
+    </div>
+
+    <nav th:replace="fragments/secinfo :: [id='secInfo']">User Info</nav>
+
+</div>
+
+<div th:include="fragments/scripts :: [id='scripts']" th:remove="tag">Scripts</div>
+<div th:include="fragments/alerts :: [id='alerts']" th:remove="tag">Alerts</div>
+
+<div th:if="${showPost == 'link'}" th:remove="tag">
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" rel="stylesheet"/>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/editor.css}"/>
+
+</div>
+
+<script th:inline="javascript" th:if="${showPost == 'link'}">
+    /*<![CDATA[*/
+
+    $('.carousel').carousel({
+        interval: false
+    });
+
+    $('#pagepreview-carousel').on('slide.bs.carousel', function (e) {
+                var imageIndex = $('#pagepreview-carousel').find('.active')
+                        .index('#pagepreview-carousel .item');
+                var imageCount = [[${pagePreview.getImages().size() - 1 }]];
+
+                if (e.direction == "left") {
+                    if (imageIndex == imageCount)
+                        $('#imageIndex').val(0);
+                    else
+                        $('#imageIndex').val(imageIndex + 1);
+                }
+                else {
+                    if (imageIndex == 0)
+                        $('#imageIndex').val(imageCount);
+                    else
+                        $('#imageIndex').val(imageIndex - 1);
+                }
+            }
+    );
+
+    $(document).ready(function () {
+
+        if (!String.format) {
+            String.format = function(format) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                return format.replace(/{(\d+)}/g, function(match, number) {
+                    return typeof args[number] != 'undefined'
+                            ? args[number]
+                            : match
+                            ;
+                });
+            };
+        }
+
+
+        function makeButton(language, abbrev) {
+            var ui = $.summernote.ui;
+            var button = ui.button({
+                contents: String.format('<i class="fa fa-{0}"/>', abbrev),
+                tooltip: 'add code block',
+                click: function () {
+                    addCodeBlock(language)
+                }
+            });
+
+            return button.render();
+        }
+
+        var JavaButton = function (context) { return makeButton("java", "j"); };
+        var JavaScriptButton= function (context) { return makeButton("javascript", "js"); };
+        var HtmlButton = function (context) { return makeButton("html", "html"); };
+        var CssButton = function (context) { return makeButton("css", "css"); };
+
+        function addCodeBlock(language) {
+            var node = document.createElement('pre');
+            var $editor = $('#summernote');
+            $editor.summernote('insertNode', node);
+
+            var code = document.createElement('code');
+            document.body.appendChild(code);
+            code.className = language;
+            code.textContent = language.toUpperCase();
+            $editor.summernote('insertNode', code);
+
+        }
+
+
+        $('#summernote').summernote({
+            minHeight: 200,
+            toolbar: [
+                ['first', ['style']],
+                ['style', ['bold', 'italic', 'underline', 'clear', 'strikethrough']],
+                ['insert', ['link']],
+                ['para', ['paragraph', 'ul', 'ol']],
+                ['misc', ['codeview', 'undo']],
+                ['codebuttons', ['java', 'js', 'html', 'css']]
+            ],
+            buttons: {
+                java: JavaButton,
+                js: JavaScriptButton,
+                html: HtmlButton,
+                css: CssButton
+            }
+        });
+
+
+    });
+
+    /*
+     Paragraph style
+     style: format selected block
+     ol: toggle ordered list
+     ul: toggle unordered list
+     paragraph: dropdown for paragraph align
+     height: set line height
+     Misc
+     fullscreen: toggle fullscreen editing mode
+     codeview: toggle wysiwyg and html editing mode
+     undo: undo
+     redo: redo
+     help: open help dialog
+     */
+    /*]]>*/
+</script>
+</body>
+</html>
+
+
+
