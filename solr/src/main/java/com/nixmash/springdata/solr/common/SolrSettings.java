@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 //@PropertySource("file:/home/daveburke/web/nixmashspring/solr.properties")
-@PropertySource("file:/Users/semiribrahim/Workspaces/Workspace_Tutorial/spring-workspace/spring-data-master/install/samples/solr.properties")
+@PropertySource("file:D:/Workspace/sts/spring-data-master/install/samples/solr.properties")
+//@PropertySource("file:/Users/semiribrahim/Workspaces/Workspace_Tutorial/spring-workspace/spring-data-master/install/samples/solr.properties")
 @ConfigurationProperties(prefix="solr")
 public class SolrSettings {
 

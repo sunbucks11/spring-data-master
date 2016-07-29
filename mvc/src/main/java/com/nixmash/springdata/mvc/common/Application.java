@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class Application {
 
 	public static void main(String[] args) {
+		// Source: http://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-devtools.html#using-boot-devtools-livereload
+		System.setProperty("spring.devtools.restart.enabled", "false");
+		//System.setProperty("spring.devtools.livereload.enabled", "false");
 		SpringApplication.run(Application.class, args);
 	}
 

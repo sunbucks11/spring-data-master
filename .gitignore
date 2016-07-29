@@ -34,3 +34,5 @@ bin
 testdb.*
 *.log
 
+.DS_Store
+

@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 //@PropertySource("file:/home/daveburke/web/nixmashspring/mail.properties")
-@PropertySource("file:/Users/semiribrahim/Workspaces/Workspace_Tutorial/spring-workspace/spring-data-master/install/samples/mail.properties")
+@PropertySource("file:D:/Workspace/sts/spring-data-master/install/samples/mail.properties")
+//@PropertySource("file:/Users/semiribrahim/Workspaces/Workspace_Tutorial/spring-workspace/spring-data-master/install/samples/mail.properties")
 
 @ConfigurationProperties(prefix = "mail")
 public class MailSettings {
